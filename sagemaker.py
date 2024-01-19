@@ -1,8 +1,9 @@
 import os
-import requests
 from typing import Optional
-from dotenv import load_dotenv
 from urllib.parse import quote
+
+import requests
+from dotenv import load_dotenv
 
 load_dotenv()
 

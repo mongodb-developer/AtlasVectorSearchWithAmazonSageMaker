@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
+
 from atlas import execute_vector_search, update_plot
 from sagemaker import create_embedding
-
 
 app = Flask(__name__)
 
@@ -34,20 +34,20 @@ def search_movies():
         query = request_json["query"]
         embedding = create_embedding(query)
 
-        search_results = execute_vector_search(embedding)
+        results = execute_vector_search(embedding)
 
-        return jsonify(
+        jsonified_results = jsonify(
             {
                 "message": "Movies searched successfully",
-                "search_results": list(search_results),
+                "results": results,
             }
         )
+
+        return jsonified_results
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
-    # app.run(debug=True)
-    embedding = create_embedding("foo")
-    print(embedding)
+    app.run(debug=True)

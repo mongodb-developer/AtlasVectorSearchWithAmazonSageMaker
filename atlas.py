@@ -1,6 +1,6 @@
-from dotenv import load_dotenv
 import os
-from typing import Optional
+
+from dotenv import load_dotenv
 from pymongo import MongoClient, UpdateOne
 
 from sagemaker import create_embedding
@@ -61,7 +61,7 @@ def add_missing_embeddings():
         print("No movies to update")
 
 
-def execute_vector_search(vector: [float]) -> Optional[dict]:
+def execute_vector_search(vector: [float]) -> list[dict]:
     vector_search_query = {
         "$vectorSearch": {
             "index": VECTOR_SEARCH_INDEX_NAME,
@@ -69,8 +69,10 @@ def execute_vector_search(vector: [float]) -> Optional[dict]:
             "queryVector": vector,
             "numCandidates": 10,
             "limit": 5,
-            "filter": {},
         }
     }
-    search_results = movies_collection.aggregate([vector_search_query])
-    return search_results
+    projection = {"$project": {"_id": 0, "title": 1}}
+    results = movies_collection.aggregate([vector_search_query, projection])
+    results_list = list(results)
+
+    return results_list
